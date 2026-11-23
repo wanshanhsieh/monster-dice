@@ -1,0 +1,1683 @@
+{
+  "costumes": {
+    "Stage": [
+      {
+        "name": "game",
+        "id": 110,
+        "file": "assets/110.png",
+        "res": 2,
+        "cx": 480,
+        "cy": 360,
+        "w": 960.0,
+        "h": 720.0
+      },
+      {
+        "name": "waiting",
+        "id": 111,
+        "file": "assets/111.svg",
+        "res": 1,
+        "cx": 240,
+        "cy": 180,
+        "w": 480.0,
+        "h": 360.0
+      }
+    ],
+    "token_player1": [
+      {
+        "name": "token_a_1",
+        "id": 1,
+        "file": "assets/1.svg",
+        "res": 1,
+        "cx": 19,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_d_1",
+        "id": 2,
+        "file": "assets/2.svg",
+        "res": 1,
+        "cx": 19,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_t_1",
+        "id": 3,
+        "file": "assets/3.svg",
+        "res": 1,
+        "cx": 19,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_m_1",
+        "id": 4,
+        "file": "assets/4.svg",
+        "res": 1,
+        "cx": 19,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_s_1",
+        "id": 5,
+        "file": "assets/5.svg",
+        "res": 1,
+        "cx": 19,
+        "cy": 20,
+        "w": 46.0,
+        "h": 45.0
+      }
+    ],
+    "token_player2": [
+      {
+        "name": "token_a_2",
+        "id": 6,
+        "file": "assets/6.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_d_2",
+        "id": 7,
+        "file": "assets/7.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_t_2",
+        "id": 8,
+        "file": "assets/8.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_m_2",
+        "id": 9,
+        "file": "assets/9.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 20,
+        "w": 45.0,
+        "h": 45.0
+      },
+      {
+        "name": "token_s_2",
+        "id": 10,
+        "file": "assets/10.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 21,
+        "w": 46.0,
+        "h": 46.0
+      }
+    ],
+    "player1_occupied": [
+      {
+        "name": "造型1",
+        "id": 11,
+        "file": "assets/11.svg",
+        "res": 1,
+        "cx": 0,
+        "cy": 0,
+        "w": 22.0,
+        "h": 22.0
+      }
+    ],
+    "player2_occupied": [
+      {
+        "name": "造型1",
+        "id": 12,
+        "file": "assets/12.svg",
+        "res": 1,
+        "cx": 0,
+        "cy": 0,
+        "w": 22.0,
+        "h": 22.0
+      }
+    ],
+    "player2_monster": [
+      {
+        "name": "dragon",
+        "id": 13,
+        "file": "assets/13.svg",
+        "res": 1,
+        "cx": 237,
+        "cy": 198,
+        "w": 258.0,
+        "h": 199.0
+      },
+      {
+        "name": "magician_1",
+        "id": 14,
+        "file": "assets/14.svg",
+        "res": 1,
+        "cx": 15,
+        "cy": 33,
+        "w": 20.0,
+        "h": 35.0
+      },
+      {
+        "name": "magician_2",
+        "id": 15,
+        "file": "assets/15.svg",
+        "res": 1,
+        "cx": 13,
+        "cy": 28,
+        "w": 25.0,
+        "h": 29.0
+      },
+      {
+        "name": "warrior_1",
+        "id": 16,
+        "file": "assets/16.svg",
+        "res": 1,
+        "cx": 6,
+        "cy": 25,
+        "w": 19.0,
+        "h": 26.0
+      },
+      {
+        "name": "warrior_2",
+        "id": 17,
+        "file": "assets/17.svg",
+        "res": 1,
+        "cx": 12,
+        "cy": 26,
+        "w": 33.0,
+        "h": 30.0
+      },
+      {
+        "name": "beast_1",
+        "id": 18,
+        "file": "assets/18.svg",
+        "res": 1,
+        "cx": 14,
+        "cy": 25,
+        "w": 31.0,
+        "h": 31.0
+      },
+      {
+        "name": "beast_2",
+        "id": 19,
+        "file": "assets/19.svg",
+        "res": 1,
+        "cx": 263,
+        "cy": 219,
+        "w": 274.0,
+        "h": 220.0
+      },
+      {
+        "name": "beast_3",
+        "id": 20,
+        "file": "assets/20.svg",
+        "res": 1,
+        "cx": 246,
+        "cy": 219,
+        "w": 258.0,
+        "h": 225.0
+      },
+      {
+        "name": "ghost_1",
+        "id": 21,
+        "file": "assets/21.svg",
+        "res": 1,
+        "cx": 253,
+        "cy": 224,
+        "w": 263.0,
+        "h": 225.0
+      },
+      {
+        "name": "ghost_2",
+        "id": 22,
+        "file": "assets/22.svg",
+        "res": 1,
+        "cx": 251,
+        "cy": 224,
+        "w": 259.0,
+        "h": 226.0
+      }
+    ],
+    "field": [
+      {
+        "name": "造型2",
+        "id": 23,
+        "file": "assets/23.svg",
+        "res": 1,
+        "cx": 238,
+        "cy": 179,
+        "w": 472.0,
+        "h": 341.0
+      }
+    ],
+    "stone_road": [
+      {
+        "name": "造型1",
+        "id": 24,
+        "file": "assets/24.svg",
+        "res": 1,
+        "cx": 1,
+        "cy": 1,
+        "w": 60.0,
+        "h": 60.0
+      }
+    ],
+    "p1_enter": [
+      {
+        "name": "造型1",
+        "id": 25,
+        "file": "assets/25.svg",
+        "res": 1,
+        "cx": 35,
+        "cy": 57,
+        "w": 76.0,
+        "h": 92.0
+      },
+      {
+        "name": "造型2",
+        "id": 26,
+        "file": "assets/26.svg",
+        "res": 1,
+        "cx": 63,
+        "cy": 42,
+        "w": 134.0,
+        "h": 87.0
+      }
+    ],
+    "mon_number": [
+      {
+        "name": "0",
+        "id": 27,
+        "file": "assets/27.png",
+        "res": 2,
+        "cx": 28,
+        "cy": 30,
+        "w": 54.0,
+        "h": 58.0
+      },
+      {
+        "name": "1",
+        "id": 28,
+        "file": "assets/28.png",
+        "res": 2,
+        "cx": 22,
+        "cy": 26,
+        "w": 40.0,
+        "h": 58.0
+      },
+      {
+        "name": "2",
+        "id": 29,
+        "file": "assets/29.png",
+        "res": 2,
+        "cx": 32,
+        "cy": 34,
+        "w": 56.0,
+        "h": 58.0
+      },
+      {
+        "name": "3",
+        "id": 30,
+        "file": "assets/30.png",
+        "res": 2,
+        "cx": 32,
+        "cy": 30,
+        "w": 58.0,
+        "h": 58.0
+      }
+    ],
+    "p2_enter": [
+      {
+        "name": "造型1",
+        "id": 31,
+        "file": "assets/31.png",
+        "res": 2,
+        "cx": 66,
+        "cy": 117,
+        "w": 137.0,
+        "h": 187.0
+      },
+      {
+        "name": "造型2",
+        "id": 32,
+        "file": "assets/32.png",
+        "res": 2,
+        "cx": 122,
+        "cy": 88,
+        "w": 279.0,
+        "h": 180.0
+      }
+    ],
+    "player1_monster": [
+      {
+        "name": "dragon",
+        "id": 33,
+        "file": "assets/33.svg",
+        "res": 1,
+        "cx": 20,
+        "cy": 31,
+        "w": 37.0,
+        "h": 35.0
+      },
+      {
+        "name": "magician_1",
+        "id": 34,
+        "file": "assets/34.svg",
+        "res": 1,
+        "cx": 10,
+        "cy": 28,
+        "w": 20.0,
+        "h": 33.0
+      },
+      {
+        "name": "magician_2",
+        "id": 35,
+        "file": "assets/35.svg",
+        "res": 1,
+        "cx": 10,
+        "cy": 26,
+        "w": 23.0,
+        "h": 28.0
+      },
+      {
+        "name": "warrior_1",
+        "id": 36,
+        "file": "assets/36.svg",
+        "res": 1,
+        "cx": 13,
+        "cy": 26,
+        "w": 20.0,
+        "h": 27.0
+      },
+      {
+        "name": "warrior_2",
+        "id": 37,
+        "file": "assets/37.svg",
+        "res": 1,
+        "cx": 270,
+        "cy": 364,
+        "w": 281.0,
+        "h": 367.0
+      },
+      {
+        "name": "beast_1",
+        "id": 38,
+        "file": "assets/38.svg",
+        "res": 1,
+        "cx": 14,
+        "cy": 24,
+        "w": 30.0,
+        "h": 30.0
+      },
+      {
+        "name": "beast_2",
+        "id": 39,
+        "file": "assets/39.svg",
+        "res": 1,
+        "cx": 254,
+        "cy": 201,
+        "w": 264.0,
+        "h": 203.0
+      },
+      {
+        "name": "beast_3",
+        "id": 40,
+        "file": "assets/40.svg",
+        "res": 1,
+        "cx": 269,
+        "cy": 229,
+        "w": 281.0,
+        "h": 234.0
+      },
+      {
+        "name": "ghost_1",
+        "id": 41,
+        "file": "assets/41.svg",
+        "res": 1,
+        "cx": 7,
+        "cy": 25,
+        "w": 21.0,
+        "h": 26.0
+      },
+      {
+        "name": "ghost_2",
+        "id": 42,
+        "file": "assets/42.svg",
+        "res": 1,
+        "cx": 241,
+        "cy": 236,
+        "w": 249.0,
+        "h": 238.0
+      }
+    ],
+    "sword": [
+      {
+        "name": "造型1",
+        "id": 43,
+        "file": "assets/43.svg",
+        "res": 1,
+        "cx": 16,
+        "cy": 15,
+        "w": 30.0,
+        "h": 30.0
+      }
+    ],
+    "shield": [
+      {
+        "name": "造型1",
+        "id": 44,
+        "file": "assets/44.svg",
+        "res": 1,
+        "cx": 12,
+        "cy": 13,
+        "w": 22.0,
+        "h": 29.0
+      }
+    ],
+    "player1_font": [
+      {
+        "name": "prepare",
+        "id": 45,
+        "file": "assets/45.svg",
+        "res": 1,
+        "cx": 0,
+        "cy": 0,
+        "w": 201.0,
+        "h": 53.0
+      }
+    ],
+    "player2_font": [
+      {
+        "name": "prepare",
+        "id": 46,
+        "file": "assets/46.svg",
+        "res": 1,
+        "cx": -1,
+        "cy": -1,
+        "w": 203.0,
+        "h": 60.0
+      }
+    ],
+    "p1_life": [
+      {
+        "name": "0",
+        "id": 47,
+        "file": "assets/47.svg",
+        "res": 1,
+        "cx": 3,
+        "cy": 2,
+        "w": 209.0,
+        "h": 166.0
+      },
+      {
+        "name": "1",
+        "id": 48,
+        "file": "assets/48.svg",
+        "res": 1,
+        "cx": 1,
+        "cy": 2,
+        "w": 209.0,
+        "h": 166.0
+      },
+      {
+        "name": "2",
+        "id": 49,
+        "file": "assets/49.svg",
+        "res": 1,
+        "cx": 3,
+        "cy": 2,
+        "w": 209.0,
+        "h": 166.0
+      },
+      {
+        "name": "3",
+        "id": 50,
+        "file": "assets/50.svg",
+        "res": 1,
+        "cx": 3,
+        "cy": 3,
+        "w": 209.0,
+        "h": 166.0
+      }
+    ],
+    "p2_life": [
+      {
+        "name": "0",
+        "id": 51,
+        "file": "assets/51.svg",
+        "res": 1,
+        "cx": 5,
+        "cy": 4,
+        "w": 220.0,
+        "h": 178.0
+      },
+      {
+        "name": "1",
+        "id": 52,
+        "file": "assets/52.svg",
+        "res": 1,
+        "cx": 6,
+        "cy": 4,
+        "w": 216.0,
+        "h": 174.0
+      },
+      {
+        "name": "2",
+        "id": 53,
+        "file": "assets/53.svg",
+        "res": 1,
+        "cx": 6,
+        "cy": 5,
+        "w": 217.0,
+        "h": 175.0
+      },
+      {
+        "name": "3",
+        "id": 54,
+        "file": "assets/54.svg",
+        "res": 1,
+        "cx": 5,
+        "cy": 4,
+        "w": 207.0,
+        "h": 167.0
+      }
+    ],
+    "duel": [
+      {
+        "name": "造型1",
+        "id": 55,
+        "file": "assets/55.svg",
+        "res": 1,
+        "cx": 109,
+        "cy": 43,
+        "w": 210.0,
+        "h": 88.0
+      }
+    ],
+    "grid_frame": [
+      {
+        "name": "造型1",
+        "id": 56,
+        "file": "assets/56.svg",
+        "res": 1,
+        "cx": -1,
+        "cy": -1,
+        "w": 39.0,
+        "h": 39.0
+      }
+    ],
+    "go_to_field": [
+      {
+        "name": "造型1",
+        "id": 57,
+        "file": "assets/57.png",
+        "res": 2,
+        "cx": 128,
+        "cy": 46,
+        "w": 253.0,
+        "h": 94.0
+      },
+      {
+        "name": "造型2",
+        "id": 58,
+        "file": "assets/58.png",
+        "res": 2,
+        "cx": 128,
+        "cy": 46,
+        "w": 253.0,
+        "h": 94.0
+      }
+    ],
+    "panel": [
+      {
+        "name": "costume1",
+        "id": 59,
+        "file": "assets/59.svg",
+        "res": 1,
+        "cx": 46,
+        "cy": 149,
+        "w": 90.0,
+        "h": 296.0
+      }
+    ],
+    "dice_2": [
+      {
+        "name": "dice_dragon_a",
+        "id": 60,
+        "file": "assets/60.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_d",
+        "id": 61,
+        "file": "assets/61.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_s",
+        "id": 62,
+        "file": "assets/62.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_t",
+        "id": 63,
+        "file": "assets/63.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_m",
+        "id": 64,
+        "file": "assets/64.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_a",
+        "id": 65,
+        "file": "assets/65.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_d",
+        "id": 66,
+        "file": "assets/66.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_s",
+        "id": 67,
+        "file": "assets/67.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_t",
+        "id": 68,
+        "file": "assets/68.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_m",
+        "id": 69,
+        "file": "assets/69.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_a",
+        "id": 70,
+        "file": "assets/70.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_d",
+        "id": 71,
+        "file": "assets/71.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_s",
+        "id": 72,
+        "file": "assets/72.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_t",
+        "id": 73,
+        "file": "assets/73.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_m",
+        "id": 74,
+        "file": "assets/74.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_a",
+        "id": 75,
+        "file": "assets/75.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_d",
+        "id": 76,
+        "file": "assets/76.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_s",
+        "id": 77,
+        "file": "assets/77.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_t",
+        "id": 78,
+        "file": "assets/78.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_m",
+        "id": 79,
+        "file": "assets/79.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_a",
+        "id": 80,
+        "file": "assets/80.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_d",
+        "id": 81,
+        "file": "assets/81.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_s",
+        "id": 82,
+        "file": "assets/82.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_t",
+        "id": 83,
+        "file": "assets/83.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_m",
+        "id": 84,
+        "file": "assets/84.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      }
+    ],
+    "dice_3": [
+      {
+        "name": "dice_dragon_a",
+        "id": 60,
+        "file": "assets/60.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_d",
+        "id": 61,
+        "file": "assets/61.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_s",
+        "id": 62,
+        "file": "assets/62.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_t",
+        "id": 63,
+        "file": "assets/63.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_m",
+        "id": 64,
+        "file": "assets/64.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_a",
+        "id": 65,
+        "file": "assets/65.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_d",
+        "id": 66,
+        "file": "assets/66.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_s",
+        "id": 67,
+        "file": "assets/67.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_t",
+        "id": 68,
+        "file": "assets/68.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_m",
+        "id": 69,
+        "file": "assets/69.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_a",
+        "id": 70,
+        "file": "assets/70.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_d",
+        "id": 71,
+        "file": "assets/71.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_s",
+        "id": 72,
+        "file": "assets/72.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_t",
+        "id": 73,
+        "file": "assets/73.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_m",
+        "id": 74,
+        "file": "assets/74.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_a",
+        "id": 75,
+        "file": "assets/75.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_d",
+        "id": 76,
+        "file": "assets/76.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_s",
+        "id": 77,
+        "file": "assets/77.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_t",
+        "id": 78,
+        "file": "assets/78.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_m",
+        "id": 79,
+        "file": "assets/79.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_a",
+        "id": 80,
+        "file": "assets/80.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_d",
+        "id": 81,
+        "file": "assets/81.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_s",
+        "id": 82,
+        "file": "assets/82.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_t",
+        "id": 83,
+        "file": "assets/83.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_m",
+        "id": 84,
+        "file": "assets/84.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      }
+    ],
+    "dice_1": [
+      {
+        "name": "dice_dragon_a",
+        "id": 60,
+        "file": "assets/60.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_d",
+        "id": 61,
+        "file": "assets/61.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_s",
+        "id": 62,
+        "file": "assets/62.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_t",
+        "id": 63,
+        "file": "assets/63.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_dragon_m",
+        "id": 64,
+        "file": "assets/64.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_a",
+        "id": 65,
+        "file": "assets/65.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_d",
+        "id": 66,
+        "file": "assets/66.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_s",
+        "id": 67,
+        "file": "assets/67.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_t",
+        "id": 68,
+        "file": "assets/68.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_magician_m",
+        "id": 69,
+        "file": "assets/69.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_a",
+        "id": 70,
+        "file": "assets/70.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_d",
+        "id": 71,
+        "file": "assets/71.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_s",
+        "id": 72,
+        "file": "assets/72.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_t",
+        "id": 73,
+        "file": "assets/73.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_warrior_m",
+        "id": 74,
+        "file": "assets/74.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_a",
+        "id": 75,
+        "file": "assets/75.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_d",
+        "id": 76,
+        "file": "assets/76.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_s",
+        "id": 77,
+        "file": "assets/77.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_t",
+        "id": 78,
+        "file": "assets/78.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_beast_m",
+        "id": 79,
+        "file": "assets/79.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_a",
+        "id": 80,
+        "file": "assets/80.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_d",
+        "id": 81,
+        "file": "assets/81.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_s",
+        "id": 82,
+        "file": "assets/82.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_t",
+        "id": 83,
+        "file": "assets/83.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      },
+      {
+        "name": "dice_ghost_m",
+        "id": 84,
+        "file": "assets/84.svg",
+        "res": 1,
+        "cx": 60,
+        "cy": 59,
+        "w": 125.0,
+        "h": 125.0
+      }
+    ],
+    "Sprite1": [
+      {
+        "name": "造型1",
+        "id": 85,
+        "file": "assets/85.svg",
+        "res": 1,
+        "cx": 59,
+        "cy": 21,
+        "w": 119.0,
+        "h": 44.0
+      },
+      {
+        "name": "造型2",
+        "id": 86,
+        "file": "assets/86.png",
+        "res": 2,
+        "cx": 118,
+        "cy": 42,
+        "w": 237.0,
+        "h": 88.0
+      }
+    ],
+    "message": [
+      {
+        "name": "destroy_monster",
+        "id": 87,
+        "file": "assets/87.svg",
+        "res": 1,
+        "cx": 205,
+        "cy": 60,
+        "w": 409.0,
+        "h": 117.0
+      },
+      {
+        "name": "destroy_grid",
+        "id": 88,
+        "file": "assets/88.svg",
+        "res": 1,
+        "cx": 200,
+        "cy": 59,
+        "w": 409.0,
+        "h": 117.0
+      },
+      {
+        "name": "get_atk",
+        "id": 89,
+        "file": "assets/89.svg",
+        "res": 1,
+        "cx": 200,
+        "cy": 60,
+        "w": 409.0,
+        "h": 117.0
+      },
+      {
+        "name": "get_def",
+        "id": 90,
+        "file": "assets/90.svg",
+        "res": 1,
+        "cx": 203,
+        "cy": 61,
+        "w": 409.0,
+        "h": 117.0
+      },
+      {
+        "name": "get_mov",
+        "id": 91,
+        "file": "assets/91.svg",
+        "res": 1,
+        "cx": 203,
+        "cy": 61,
+        "w": 409.0,
+        "h": 117.0
+      },
+      {
+        "name": "p1_cant_def",
+        "id": 92,
+        "file": "assets/92.png",
+        "res": 2,
+        "cx": 386,
+        "cy": 97,
+        "w": 770.0,
+        "h": 192.0
+      },
+      {
+        "name": "p1_atk_s",
+        "id": 93,
+        "file": "assets/93.png",
+        "res": 2,
+        "cx": 386,
+        "cy": 97,
+        "w": 770.0,
+        "h": 192.0
+      },
+      {
+        "name": "p1_atk_f",
+        "id": 94,
+        "file": "assets/94.png",
+        "res": 2,
+        "cx": 386,
+        "cy": 97,
+        "w": 770.0,
+        "h": 192.0
+      },
+      {
+        "name": "p2_cant_def",
+        "id": 95,
+        "file": "assets/95.svg",
+        "res": 1,
+        "cx": 193,
+        "cy": 46,
+        "w": 385.0,
+        "h": 96.0
+      },
+      {
+        "name": "p2_atk_s",
+        "id": 96,
+        "file": "assets/96.png",
+        "res": 2,
+        "cx": 386,
+        "cy": 97,
+        "w": 770.0,
+        "h": 192.0
+      },
+      {
+        "name": "p2_atk_f",
+        "id": 97,
+        "file": "assets/97.png",
+        "res": 2,
+        "cx": 386,
+        "cy": 97,
+        "w": 770.0,
+        "h": 192.0
+      },
+      {
+        "name": "token_full",
+        "id": 98,
+        "file": "assets/98.svg",
+        "res": 1,
+        "cx": 142,
+        "cy": 48,
+        "w": 285.0,
+        "h": 93.0
+      },
+      {
+        "name": "invalid",
+        "id": 99,
+        "file": "assets/99.svg",
+        "res": 1,
+        "cx": 141,
+        "cy": 48,
+        "w": 285.0,
+        "h": 93.0
+      },
+      {
+        "name": "p1_atk_p2",
+        "id": 100,
+        "file": "assets/100.svg",
+        "res": 1,
+        "cx": 234,
+        "cy": 43,
+        "w": 464.0,
+        "h": 93.0
+      },
+      {
+        "name": "p2_atk_p1",
+        "id": 101,
+        "file": "assets/101.svg",
+        "res": 1,
+        "cx": 232,
+        "cy": 44,
+        "w": 464.0,
+        "h": 93.0
+      },
+      {
+        "name": "p1_wins",
+        "id": 102,
+        "file": "assets/102.svg",
+        "res": 1,
+        "cx": 227,
+        "cy": 84,
+        "w": 455.0,
+        "h": 170.0
+      },
+      {
+        "name": "p2_wins",
+        "id": 103,
+        "file": "assets/103.svg",
+        "res": 1,
+        "cx": 229,
+        "cy": 83,
+        "w": 455.0,
+        "h": 170.0
+      },
+      {
+        "name": "invalid_move",
+        "id": 104,
+        "file": "assets/104.svg",
+        "res": 1,
+        "cx": 138,
+        "cy": 44,
+        "w": 280.0,
+        "h": 90.0
+      },
+      {
+        "name": "choose_attacked",
+        "id": 105,
+        "file": "assets/105.svg",
+        "res": 1,
+        "cx": 193,
+        "cy": 48,
+        "w": 386.0,
+        "h": 97.0
+      },
+      {
+        "name": "cant_make_road",
+        "id": 106,
+        "file": "assets/106.svg",
+        "res": 1,
+        "cx": 235,
+        "cy": 45,
+        "w": 470.0,
+        "h": 96.0
+      },
+      {
+        "name": "throwout_def",
+        "id": 107,
+        "file": "assets/107.svg",
+        "res": 1,
+        "cx": 227,
+        "cy": 56,
+        "w": 454.0,
+        "h": 111.0
+      },
+      {
+        "name": "block_throw",
+        "id": 108,
+        "file": "assets/108.svg",
+        "res": 1,
+        "cx": 179,
+        "cy": 67,
+        "w": 363.0,
+        "h": 130.0
+      },
+      {
+        "name": "transfer_door",
+        "id": 109,
+        "file": "assets/109.png",
+        "res": 2,
+        "cx": 165,
+        "cy": 283,
+        "w": 324.0,
+        "h": 566.0
+      }
+    ]
+  },
+  "sounds": {
+    "pop": "assets/0.wav",
+    "pop聲": "assets/0.wav",
+    "coinflip": "assets/1.wav",
+    "damage": "assets/2.wav",
+    "destroyed": "assets/3.wav",
+    "summon": "assets/4.wav",
+    "draw": "assets/5.wav",
+    "specialsummon": "assets/6.wav",
+    "attack": "assets/7.wav",
+    "playerenter": "assets/8.wav",
+    "set": "assets/9.wav",
+    "diceroll": "assets/10.wav",
+    "nextturn": "assets/11.wav"
+  }
+}
