@@ -249,16 +249,72 @@
       gap: 6px;
     }
 
-    .info-card ul {
-      padding-left: 18px;
+    .rule-goal {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 8px 10px;
+      border-radius: 8px;
       font-size: 0.85rem;
-      color: #cbd5e1;
-      line-height: 1.6;
+      line-height: 1.5;
+      color: #fef3c7;
+      margin-bottom: 10px;
     }
 
-    .info-card li {
-      margin-bottom: 5px;
+    .rule-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
     }
+
+    .step-item {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    .step-item strong {
+      color: #93c5fd;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      font-size: 0.82rem;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 6px 8px;
+      border-radius: 6px;
+      line-height: 1.45;
+      color: #cbd5e1;
+    }
+
+    .b-tag {
+      display: inline-block;
+      min-width: 66px;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+
+    .b-s { background: #f59e0b; color: #0f172a; }
+    .b-m { background: #10b981; color: #0f172a; }
+    .b-a { background: #ef4444; color: #ffffff; }
+    .b-d { background: #3b82f6; color: #ffffff; }
+    .b-t { background: #a855f7; color: #ffffff; }
 
     table.stats-table {
       width: 100%;
@@ -330,68 +386,97 @@
 
     <aside class="sidebar">
       <div class="info-card">
-        <h2>📜 遊戲流程與規則</h2>
-        <ul>
-          <li><strong>勝利條件</strong>：雙方各從左（P1: 第1行第7列）、右（P2: 第19行第7列）展開領地，各擁有 3 點生命值。當怪獸走到對方基地旁發動攻擊即可扣減對方生命，先歸零者獲勝！</li>
-          <li><strong>1. 選怪擲骰 (Panel)</strong>：每回合先點擊側邊面板上的 5 種怪獸之一擲出 3 顆骰子。
-            <br/>⭐ 若擲出兩顆<strong>星星 (Summon)</strong>，自動獲得該族的<strong>召喚印記 (S)</strong>！
-            <br/>👆 點擊其餘骰子可收集<strong>攻擊(A)、防禦(D)、移動(M)、陷阱(T)</strong>印記（上限 5 個）。</li>
-          <li><strong>2. 戰場行動 (Field)</strong>：點擊畫面角落的「<strong>開始戰鬥</strong>」按鈕進入棋盤，接著點擊持有的印記執行動作：
-            <br/>• <strong>召喚 (S)</strong>：點擊與己方領地相鄰的空格，自動延伸鋪設 6 格領地並召喚怪獸！
-            <br/>• <strong>移動 (M)</strong>：點擊怪獸後，依序點擊相鄰的領地格前進（若前方 5 行已有領地，有 1/6 機率觸發<strong>傳送門</strong>瞬移！）。
-            <br/>• <strong>攻擊 (A) 與防禦 (D)</strong>：點擊怪獸再點相鄰敵怪發起決鬥；雙方可追加 A/D 印記疊加數值（每枚 +500），最後雙方點擊下方準備按鈕結算！<em>（注意：在自己回合誤點防禦印記會被罰跳過下次擲骰！）</em>
-            <br/>• <strong>陷阱 (T)</strong>：隨機觸發破壞敵方怪獸、破壞敵方空領地或獲得隨機印記！
-            <br/>• 行動結束後，點擊角落的「<strong>回合結束</strong>」換對手回合。</li>
-        </ul>
+        <h2>🎯 30 秒看懂怎麼玩</h2>
+        <div class="rule-goal">
+          <strong>🏆 勝利目標</strong>：紅方（左）與藍方（右）各有 <strong>3 顆愛心 ❤️</strong>。<br/>
+          鋪路把怪獸走到<strong>對手基地正隔壁</strong>並發動<strong>攻擊</strong>，就能扣對手 1 顆心，先扣完對手 3 顆心即獲勝！
+        </div>
+
+        <div class="rule-steps">
+          <div class="step-item">
+            <strong>STEP 1｜點怪獸擲骰子</strong><br/>
+            每回合先點選側邊面板的一隻怪獸擲出 3 顆骰子：<br/>
+            • 擲出 <strong>2 顆星星 ⭐</strong>：自動獲得該怪獸的<strong>召喚徽章</strong>！<br/>
+            • 點擊其他骰子：收進手牌（上限 <strong>5 枚</strong>），再點「<strong>開始戰鬥</strong>」。
+          </div>
+          <div class="step-item">
+            <strong>STEP 2｜用徽章行動（可無限次行動）</strong><br/>
+            進入棋盤後，點擊手上的徽章執行動作（想留空位時，<strong>連點兩下</strong>移動/攻擊徽章可將其丟棄），結束後點「<strong>回合結束</strong>」。
+          </div>
+        </div>
+
+        <h2>🛡️ 五種徽章功能一覽</h2>
+        <div class="badge-grid">
+          <div class="badge-row">
+            <span class="b-tag b-s">⭐ 召喚 S</span>
+            <span>點擊發亮的空格，自動延伸鋪出 <strong>6 格領地</strong>並召喚怪獸上場！</span>
+          </div>
+          <div class="badge-row">
+            <span class="b-tag b-m">👟 移動 M</span>
+            <span>點怪獸再點黃色箭頭前進（雙方領地都能走；走完第1步再點同格可提前停下）。</span>
+          </div>
+          <div class="badge-row">
+            <span class="b-tag b-a">⚔️ 攻擊 A</span>
+            <span>點怪獸再點<strong>相鄰敵怪</strong>決鬥（或直接砍敵方基地）。多點幾枚可每次 <strong>+500 攻</strong>！</span>
+          </div>
+          <div class="badge-row">
+            <span class="b-tag b-d">🛡️ 防禦 D</span>
+            <span><strong>被攻擊時專用！</strong>點被打的怪獸啟動防禦（<strong>防禦 ≥ 攻擊</strong>即擋下）。<em>自己回合誤點會被罰停擲！</em></span>
+          </div>
+          <div class="badge-row">
+            <span class="b-tag b-t">⚡ 陷阱 T</span>
+            <span>隨機抽效果：直接<strong>炸掉一隻敵怪</strong>、<strong>炸掉一格敵方空地</strong>，或獲得隨機徽章！</span>
+          </div>
+        </div>
       </div>
 
       <div class="info-card">
-        <h2>🐉 五大怪獸種族數值表</h2>
+        <h2>🐉 怪獸能力表</h2>
         <table class="stats-table">
           <thead>
             <tr>
               <th>種族</th>
               <th>上限</th>
-              <th>基礎攻擊</th>
-              <th>基礎防禦</th>
-              <th>移動格數</th>
+              <th>攻擊力</th>
+              <th>防禦力</th>
+              <th>移動</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>龍族 (Dragon)</td>
+              <td>龍族</td>
               <td>1 隻</td>
               <td>1000</td>
               <td>1000</td>
-              <td>3 格</td>
+              <td>1~3 格</td>
             </tr>
             <tr>
-              <td>魔法師 (Magician)</td>
+              <td>魔法師</td>
               <td>2 隻</td>
               <td>1000</td>
               <td>1500</td>
-              <td>2 格</td>
+              <td>1~2 格</td>
             </tr>
             <tr>
-              <td>戰士族 (Warrior)</td>
+              <td>戰士族</td>
               <td>2 隻</td>
               <td>1500</td>
               <td>1000</td>
               <td>1 格</td>
             </tr>
             <tr>
-              <td>獸族 (Beast)</td>
+              <td>獸族</td>
               <td>3 隻</td>
               <td>1000</td>
               <td>500</td>
               <td>1 格</td>
             </tr>
             <tr>
-              <td>不死族 (Ghost)</td>
+              <td>不死族</td>
               <td>2 隻</td>
               <td>500</td>
               <td>1500</td>
-              <td>2 格</td>
+              <td>1~2 格</td>
             </tr>
           </tbody>
         </table>
