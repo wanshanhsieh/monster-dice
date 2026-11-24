@@ -1760,8 +1760,9 @@
     const isP1Turn = G.turn % 2 === 0;
     if (isP1Turn && tileOwner === 2 && G.curr_action_1 === 3 && G.defense_done === 2) {
       if (getCell(tr, tc) === 2) {
+        updateStatusUI(`💣 玩家 1 (紅方) 破壞了藍方位於 (第 ${tr} 列, 第 ${tc} 行) 的領地道路！`);
+        await animateDestroyTile(tileSprite, tr, tc);
         setCell(tr, tc, 0);
-        playSound('damage');
         clones.p2_occupied = clones.p2_occupied.filter((t) => t !== tileSprite);
         finishTokenAction(1);
       } else {
@@ -1770,8 +1771,9 @@
       }
     } else if (!isP1Turn && tileOwner === 1 && G.curr_action_2 === 3 && G.defense_done === 2) {
       if (getCell(tr, tc) === 1) {
+        updateStatusUI(`💣 玩家 2 (藍方) 破壞了紅方位於 (第 ${tr} 列, 第 ${tc} 行) 的領地道路！`);
+        await animateDestroyTile(tileSprite, tr, tc);
         setCell(tr, tc, 0);
-        playSound('damage');
         clones.p1_occupied = clones.p1_occupied.filter((t) => t !== tileSprite);
         finishTokenAction(2);
       } else {
@@ -1779,6 +1781,18 @@
         finishTokenAction(2);
       }
     }
+  }
+
+  async function animateDestroyTile(tileSprite, row, col) {
+    playSound('damage');
+    G.destroyingTileEffect = { row, col, phase: 0 };
+    for (let i = 0; i < 4; i++) {
+      G.destroyingTileEffect.phase = i;
+      tileSprite.visible = (i % 2 === 1);
+      await sleep(170);
+    }
+    G.destroyingTileEffect = null;
+    tileSprite.visible = false;
   }
 
   // Spawn Monster Clone
@@ -2535,6 +2549,27 @@
     if (!drawnChests) drawChestsLayer();
     if (!drawnShields) drawShieldsLayer();
 
+    // Draw Flashing Explosion Effect when a territory road tile is being destroyed!
+    if (G.destroyingTileEffect) {
+      const dt = G.destroyingTileEffect;
+      const sx = CENTER_X + X_MODIFIED[dt.col - 1];
+      const sy = CENTER_Y - Y_MODIFIED[dt.row - 1];
+      ctx.save();
+      ctx.fillStyle = dt.phase % 2 === 0 ? 'rgba(239, 68, 68, 0.85)' : 'rgba(250, 204, 21, 0.85)';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(sx - 3, sy - 3, 28, 28, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '18px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('💥', sx + 11, sy + 11);
+      ctx.restore();
+    }
+
     // Waiting screen visual guide when P2 is AI: highlight P1 for human player & badge P2 as AI!
     if (G.stageCostume === 'waiting' && sprites.p1_enter.visible) {
       const p1x = CENTER_X + sprites.p1_enter.x;
@@ -2932,8 +2967,99 @@
   }
 
   // ============================================================================
-  // AI Controller (Player 2 Automated Heuristic Engine)
+  // AI Controller (Player 2 Automated Heuristic Engine - Opponent Hand Aware!)
   // ============================================================================
+
+  // Helper: Inspect Player 1 (Red)'s active hand tokens so AI can make tactical counter-decisions!
+  function getP1HandCounts() {
+    const counts = { atk: 0, def: 0, trap: 0, mov: 0, summon: 0, total: 0 };
+    for (const tk of clones.p1_tokens) {
+      const val = Number(G.player1_token_list[tk.vars.slotIndex]);
+      if (val > 0) {
+        counts.total++;
+        if (tk.costumeIndex === 1) counts.atk++;
+        else if (tk.costumeIndex === 2) counts.def++;
+        else if (tk.costumeIndex === 3) counts.trap++;
+        else if (tk.costumeIndex === 4) counts.mov++;
+        else if (tk.costumeIndex === 5) counts.summon++;
+      }
+    }
+    return counts;
+  }
+
+  // Helper: Calculate maximum defense a P1 monster can reach if P1 spends all their Defense tokens
+  function getP1MonsterMaxPotentialDef(enemyMon, p1Hand) {
+    const baseDef = getBaseDef(enemyMon.costumeIndex);
+    if (enemyMon.vars.shielded) {
+      // Shield already activates baseDef; each P1 defense token in hand adds +1
+      return baseDef + p1Hand.def;
+    } else {
+      // Without shield, if P1 has 0 defense tokens, their defense is 0!
+      // If P1 has >= 1 defense tokens, 1st token activates baseDef and remaining add +1
+      return p1Hand.def > 0 ? baseDef + (p1Hand.def - 1) : 0;
+    }
+  }
+
+  // Helper: Smart Road Destruction Target Selection for AI
+  // Evaluates which P1 empty territory tile, when destroyed, best blocks P1's monsters or cuts a bridge!
+  function chooseBestEnemyTileToDestroyForAI(emptyEnemyTiles) {
+    let bestTile = emptyEnemyTiles[0];
+    let bestScore = -99999;
+
+    const isRoad = (r, c) => {
+      const v = getCell(r, c);
+      return v > 0 && v !== 5;
+    };
+
+    for (const tile of emptyEnemyTiles) {
+      const r = tile.vars.row;
+      const c = tile.vars.col;
+      let score = c * 12; // Base preference for tiles closer to P2 base (right side)
+
+      // 1. Is this tile directly in front of (or adjacent to) a P1 monster advancing right?
+      for (const em of clones.p1_monster) {
+        const dist = Math.abs(r - em.vars.row) + Math.abs(c - em.vars.col);
+        if (dist === 1 && c >= em.vars.col) {
+          score += 500; // Immediately in front of P1 monster!
+        } else if (dist === 1) {
+          score += 220;
+        } else if (dist === 2 && c > em.vars.col) {
+          score += 280; // 2 steps ahead on P1 monster's path!
+        }
+      }
+
+      // 2. Is this tile a bridge / chokepoint? (Connects left/right or up/down without parallel bypass)
+      const leftRoad = isRoad(r, c - 1);
+      const rightRoad = isRoad(r, c + 1);
+      const upRoad = isRoad(r - 1, c);
+      const downRoad = isRoad(r + 1, c);
+      const roadNeighbors = (leftRoad ? 1 : 0) + (rightRoad ? 1 : 0) + (upRoad ? 1 : 0) + (downRoad ? 1 : 0);
+
+      if (leftRoad && rightRoad && !upRoad && !downRoad) {
+        score += 420; // Critical horizontal 1-tile wide bridge!
+      } else if (upRoad && downRoad && !leftRoad && !rightRoad) {
+        score += 320; // Critical vertical 1-tile wide bridge!
+      } else if (roadNeighbors >= 2) {
+        score += 180; // Connected corridor tile
+      } else if (roadNeighbors <= 1) {
+        score -= 150; // Dead-end branch tip (low value to destroy unless it's the furthest frontier)
+      }
+
+      // 3. Bonus if this tile is adjacent to P2's own territory (connecting the two armies' roads)
+      const connectsToP2 = [getCell(r - 1, c), getCell(r + 1, c), getCell(r, c - 1), getCell(r, c + 1)].some(
+        (v) => v === 2 || (v > 10 && (v % 10 === 2 || v % 10 === 4))
+      );
+      if (connectsToP2) {
+        score += 360;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestTile = tile;
+      }
+    }
+    return bestTile;
+  }
 
   function findBestMovePathForAI(mon, maxSteps) {
     const startR = mon.vars.row;
@@ -2972,16 +3098,18 @@
 
     if (candidates.length === 0) return null;
 
-    // Score each candidate destination:
-    // Priority 1: Direct base attack squares (7,2), (6,1), (8,1)
-    // Priority 2: Squares adjacent to an enemy monster we can beat
-    // Priority 3: Closer to P1 base (row 7, col 1) than current position
+    // Score each candidate destination (taking P1's hand tokens into account!):
     const curDistToBase = Math.abs(startR - 7) + Math.abs(startC - 1);
     let bestCand = null;
     let bestScore = -9999;
 
+    const p1Hand = getP1HandCounts();
     const atkTokensCount = clones.p2_tokens.filter((t) => t.costumeIndex === 1 && Number(G.player2_token_list[t.vars.slotIndex]) > 0).length;
+    const defTokensCount = clones.p2_tokens.filter((t) => t.costumeIndex === 2 && Number(G.player2_token_list[t.vars.slotIndex]) > 0).length;
     const myPotentialAtk = getBaseAtk(mon.costumeIndex) + Math.max(0, atkTokensCount - 1);
+    const myMaxDef = mon.vars.shielded
+      ? getBaseDef(mon.costumeIndex) + defTokensCount
+      : (defTokensCount > 0 ? getBaseDef(mon.costumeIndex) + (defTokensCount - 1) : 0);
 
     for (const cand of candidates) {
       let score = 0;
@@ -2996,23 +3124,31 @@
 
       // Bonus for stepping directly onto a Mystery Treasure Chest!
       if (G.treasure_chests && G.treasure_chests.some((ch) => ch.row === cand.r && ch.col === cand.c)) {
-        score += 450;
+        score += 480;
       }
 
-      // Check adjacency to P1 monsters
+      // Check adjacency to P1 monsters & evaluate P1's hand tokens!
       for (const em of clones.p1_monster) {
         const d = Math.abs(cand.r - em.vars.row) + Math.abs(cand.c - em.vars.col);
-        if (d === 1 && atkTokensCount > 0) {
-          const enemyBaseDef = getBaseDef(em.costumeIndex);
-          if (myPotentialAtk > enemyBaseDef) {
-            score += 600;
-          } else {
-            score += 120;
+        if (d === 1) {
+          const enemyMaxDef = getP1MonsterMaxPotentialDef(em, p1Hand);
+          const enemyMaxAtk = p1Hand.atk > 0 ? getBaseAtk(em.costumeIndex) + (p1Hand.atk - 1) : 0;
+
+          if (atkTokensCount > 0 && myPotentialAtk > enemyMaxDef) {
+            // We can guaranteed kill this P1 monster even through P1's defense tokens!
+            score += 750;
+          } else if (atkTokensCount > 0 && p1Hand.def > 0 && myPotentialAtk > getBaseDef(em.costumeIndex)) {
+            // We can force P1 to burn their defense tokens
+            score += 200;
+          } else if (atkTokensCount === 0 && p1Hand.atk > 0 && enemyMaxAtk > myMaxDef) {
+            // Danger! We have NO attack tokens to strike first, and P1 has enough Attack tokens in hand to kill us next turn!
+            // Avoid stepping right next to P1's monster!
+            score -= 350;
           }
         }
       }
 
-      // Only consider moves that either reach base, engage enemy, or advance closer to P1 base
+      // Only consider moves that either reach base, engage enemy favorably, pick up chest, or advance safely
       if (score > 0 && score > bestScore) {
         bestScore = score;
         bestCand = cand;
@@ -3109,12 +3245,17 @@
           { sp: sprites.dice_3, idx: 3 },
         ];
 
-        // Sort dice by priority: Move (5,6) > Attack (1) > Trap (4) > Defense (2)
+        // Sort dice by priority (dynamically adjusted by inspecting P1's hand tokens!):
+        const p1HandDice = getP1HandCounts();
         const priorityOf = (act) => {
-          if (act === 5 || act === 6) return 10;
-          if (act === 1) return 8;
-          if (act === 4) return 6;
-          if (act === 2) return 4;
+          if (act === 5 || act === 6) return 10; // Move
+          if (act === 1) return 8;               // Attack
+          if (act === 4) return 7;               // Trap
+          if (act === 2) {
+            // If P1 holds Trap or Attack tokens and AI has monsters on board, raise Defense priority to protect them!
+            if (clones.p2_monster.length > 0 && (p1HandDice.trap > 0 || p1HandDice.atk > 0)) return 9;
+            return 4;
+          }
           return 0;
         };
         diceSprites.sort(
@@ -3189,8 +3330,11 @@
 
           // If trap requires selecting an enemy monster (defense_done === 1)
           if (G.curr_action_2 === 3 && G.defense_done === 1 && clones.p1_monster.length > 0) {
-            // Pick enemy monster closest to P2 base (col 19) or highest attack
-            const targetMon = [...clones.p1_monster].sort((a, b) => b.vars.col - a.vars.col)[0];
+            // Prefer unshielded enemy monsters first so we actually destroy a monster (or strip shield from frontline threat)!
+            const targetMon = [...clones.p1_monster].sort((a, b) => {
+              if (!!a.vars.shielded !== !!b.vars.shielded) return a.vars.shielded ? 1 : -1;
+              return b.vars.col - a.vars.col;
+            })[0];
             if (targetMon) {
               await onClickMonster(targetMon);
               await sleep(600);
@@ -3200,9 +3344,8 @@
           else if (G.curr_action_2 === 3 && G.defense_done === 2) {
             const emptyEnemyTiles = clones.p1_occupied.filter((t) => getCell(t.vars.row, t.vars.col) === 1);
             if (emptyEnemyTiles.length > 0) {
-              // Pick tile furthest right (closest to P2 base)
-              emptyEnemyTiles.sort((a, b) => b.vars.col - a.vars.col);
-              await onClickOccupiedTile(1, emptyEnemyTiles[0]);
+              const bestRoadTile = chooseBestEnemyTileToDestroyForAI(emptyEnemyTiles);
+              await onClickOccupiedTile(1, bestRoadTile);
               await sleep(600);
             }
           }
@@ -3303,14 +3446,21 @@
             }
 
             if (pair) {
+              const p1HandNow = getP1HandCounts();
               const myBaseAtk = getBaseAtk(pair.attacker.costumeIndex);
               const enemyBaseDef = getBaseDef(pair.defender.costumeIndex);
+              const enemyMaxPotentialDef = getP1MonsterMaxPotentialDef(pair.defender, p1HandNow);
               const maxMyAtk = myBaseAtk + (atkTokens.length - 1);
 
-              // Attack if we can beat or tie enemy base defense, or if our hand is full (>= 4 tokens)
+              // Smart Attack Decision (inspecting P1's Defense tokens & Shield):
+              // 1. Guaranteed kill: maxMyAtk > enemyMaxPotentialDef
+              // 2. Profitable trade: P1 has a Shield or Defense tokens, and we can force P1 to spend them (maxMyAtk > enemyBaseDef) when we have >= 2 atk tokens or full hand
               const activeHandSize = G.player2_token_list.filter((v) => Number(v) > 0).length;
-              if (maxMyAtk >= enemyBaseDef || activeHandSize >= 4) {
-                updateStatusUI('🤖 AI 對相鄰的紅方怪獸發起決鬥！');
+              const isGuaranteedKill = maxMyAtk > enemyMaxPotentialDef;
+              const canForceDefenseBurn = maxMyAtk > enemyBaseDef && (atkTokens.length >= 2 || activeHandSize >= 4);
+
+              if (isGuaranteedKill || canForceDefenseBurn) {
+                updateStatusUI('🤖 AI 評估過你的手牌防禦後，對相鄰的紅方怪獸發起決鬥！');
                 // First attack token initiates duel
                 await onClickPlayer2Token(atkTokens[0]);
                 await sleep(450);
@@ -3327,10 +3477,11 @@
                 await atkPromise;
                 await sleep(500);
 
-                // Stack extra attack tokens if needed to exceed enemyBaseDef
+                // Stack extra attack tokens: if we can beat enemyMaxPotentialDef, stack enough to exceed it!
+                const targetDefToBeat = isGuaranteedKill ? enemyMaxPotentialDef : enemyBaseDef;
                 let curAtk = Number(G.player2_mon_atk_def[pair.attacker.costumeIndex - 1]);
                 for (let k = 1; k < atkTokens.length; k++) {
-                  if (curAtk > enemyBaseDef) break;
+                  if (curAtk > targetDefToBeat) break;
                   await onClickPlayer2Token(atkTokens[k]);
                   await sleep(400);
                   await onClickMonster(pair.attacker);
@@ -3354,8 +3505,8 @@
           }
         }
 
-        // 2E. Smart Hand Management & Active Shielding at End of AI Turn:
-        // First, if AI has an unshielded monster and >= 2 Defense tokens (or hand >= 4 with a Defense token), actively put a Shield on its frontline monster!
+        // 2E. Smart Hand Management & Active Shielding (Inspecting P1's Hand!) at End of AI Turn:
+        const p1HandEnd = getP1HandCounts();
         const defTokensEnd = clones.p2_tokens.filter(
           (t) => Number(G.player2_token_list[t.vars.slotIndex]) > 0 && t.costumeIndex === 2
         );
@@ -3365,8 +3516,10 @@
 
         if (defTokensEnd.length > 0 && unshieldedMons.length > 0) {
           const curHand = G.player2_token_list.filter((v) => Number(v) > 0).length;
-          if (defTokensEnd.length >= 2 || curHand >= 4) {
-            updateStatusUI('🤖 AI 主動使用防禦徽章為前線怪獸掛上護盾 🛡️！');
+          // If P1 holds a Trap token (35% chance to destroy our monster!) or Attack tokens, or if AI has >= 2 Defense tokens / full hand,
+          // immediately attach a Protective Shield to AI's frontline monster!
+          if (p1HandEnd.trap > 0 || p1HandEnd.atk > 0 || defTokensEnd.length >= 2 || curHand >= 4) {
+            updateStatusUI('🤖 AI 觀察到你手上有攻擊/陷阱徽章，主動為前線怪獸掛上護盾 🛡️！');
             await onClickPlayer2Token(defTokensEnd[0]);
             await sleep(400);
             await onClickMonster(unshieldedMons[0]);
