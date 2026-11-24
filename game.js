@@ -334,6 +334,7 @@
     grid_created: [],
     deadlock_list: [],
     monster_move: [],
+    treasure_chests: [],
   };
 
   function getCell(row, col) {
@@ -419,8 +420,8 @@
     const p2HpEl = document.getElementById('ui-p2-hp');
     const hintEl = document.getElementById('ui-hint');
 
-    if (p1HpEl) p1HpEl.textContent = '❤️'.repeat(Math.max(0, G.p1_life)) + '🖤'.repeat(Math.max(0, 3 - G.p1_life));
-    if (p2HpEl) p2HpEl.textContent = '❤️'.repeat(Math.max(0, G.p2_life)) + '🖤'.repeat(Math.max(0, 3 - G.p2_life));
+    if (p1HpEl) p1HpEl.textContent = '❤️'.repeat(Math.max(0, G.p1_life)) + '🖤'.repeat(Math.max(0, Math.max(3, G.p1_life) - G.p1_life));
+    if (p2HpEl) p2HpEl.textContent = '❤️'.repeat(Math.max(0, G.p2_life)) + '🖤'.repeat(Math.max(0, Math.max(3, G.p2_life) - G.p2_life));
 
     if (!G.game_on) {
       if (turnBadge) {
@@ -461,6 +462,7 @@
         if (act === 5) hintEl.textContent = '【召喚鋪路】請點擊與己方領地相鄰（上下左右）的棋盤格來鋪設 6 格領地並召喚怪獸！';
         else if (act === 4) hintEl.textContent = '【怪獸移動】請先點擊要移動的己方怪獸，再依序點擊相鄰的領地格移動！（💡 若不想使用，可再次點擊該枚發亮的移動徽章直接將其丟棄）';
         else if (act === 1) hintEl.textContent = '【發動攻擊】請點擊要發動攻擊的己方怪獸！（💡 若不想使用，可再次點擊該枚發亮的攻擊徽章直接將其丟棄）';
+        else if (act === 2) hintEl.textContent = '【主動護盾 🛡️】請點擊場上一隻己方怪獸為其掛上護盾！（可抵擋 1 次敵方陷阱破壞，並在決鬥時自動提供基礎防禦力；再點一下徽章可丟棄）';
         else if (act === 3) hintEl.textContent = '【陷阱效果】請根據提示點擊要破壞的敵方怪獸或敵方領地格！';
         else if (!alive && activeCount > 0) {
           hintEl.textContent = `⚠️ 目前場上無己方怪獸！若要騰出空位給下回合的「召喚徽章」，請直接點擊${isP1 ? '上方紅方' : '下方藍方'}的「移動/攻擊/陷阱」徽章將其丟棄（共有 ${activeCount}/5 枚），完成後點擊「回合結束」。`;
@@ -741,6 +743,18 @@
       stone.comeToFront();
       stone.visible = true;
       clones.stone_road.push(stone);
+    }
+
+    // Spawn 2 neutral Mystery Treasure Chests in the middle columns (col 8..12)
+    G.treasure_chests = [];
+    let chestTries = 0;
+    while (G.treasure_chests.length < 2 && chestTries < 50) {
+      chestTries++;
+      const cr = randInt(2, 12);
+      const cc = randInt(8, 12);
+      if (getCell(cr, cc) === 0 && !G.treasure_chests.some((ch) => ch.row === cr && ch.col === cc)) {
+        G.treasure_chests.push({ row: cr, col: cc });
+      }
     }
 
     G.player1_token_list = [];
@@ -1189,12 +1203,17 @@
     tokenSprite.ghost = 50;
   }
 
+  // Original 1~6 equal probability (1/6 = 16.7% each) for Trap token
+  function rollSmartTrapEffect() {
+    return randInt(1, 6);
+  }
+
   //Player 1 Token Click Handler
   async function onClickPlayer1Token(tk) {
     if (G.field !== 1) return;
     // Allow clicking an already-activated Move, Attack, or Defense token a second time to cancel/discard it!
     if (G.t1_lock === 1 && G.activeToken1 === tk && !G.movingState && !G.targetMonsterResolver) {
-      if (G.curr_action_1 === 4 || G.curr_action_1 === 1) {
+      if (G.curr_action_1 === 4 || G.curr_action_1 === 1 || (G.curr_action_1 === 2 && G.turn % 2 === 0)) {
         playSound('coinflip');
         consumeToken(1, tk);
         G.activeToken1 = null;
@@ -1203,7 +1222,7 @@
         updateStatusUI('🗑️ 已主動丟棄 1 枚徽章，騰出空間！');
         return;
       } else if (G.curr_action_1 === 2) {
-        // Cancel defense activation without consuming
+        // Cancel defense activation on opponent's turn without consuming
         tk.colorEffect = 0;
         G.activeToken1 = null;
         G.curr_action_1 = 0;
@@ -1265,14 +1284,21 @@
           G.t1_lock = 0;
         }
       } else if (cosIdx === 2) {
-        // Using Defense token on own turn -> throwout_def punishment!
-        playSound('coinflip');
-        tk.colorEffect = 25;
-        await showMessage(21); // throwout_def
-        consumeToken(1, tk);
-        G.activeToken1 = null;
-        G.p1_punish = 1;
-        G.t1_lock = 0;
+        // NEW RULE 4: Using Defense token on own turn attaches a Protective Shield to an allied monster!
+        if (hasMonsterAlive(1)) {
+          playSound('coinflip');
+          tk.colorEffect = 25;
+          G.curr_action_1 = 2;
+          updateStatusUI();
+        } else {
+          // No monster alive: discard defense token without penalty!
+          playSound('coinflip');
+          consumeToken(1, tk);
+          G.activeToken1 = null;
+          G.curr_action_1 = 0;
+          G.t1_lock = 0;
+          updateStatusUI('🗑️ 場上無怪獸，已將防禦徽章丟棄騰出空間！');
+        }
       } else if (cosIdx === 3) {
         // Trap token
         if (hasMonsterAlive(1)) {
@@ -1280,7 +1306,7 @@
           tk.colorEffect = 25;
           G.curr_action_1 = 3;
           G.dice_grid_num = 0;
-          const effect = randInt(1, 6);
+          const effect = rollSmartTrapEffect(2);
           G.defense_done = effect;
 
           let hasTarget = false;
@@ -1301,13 +1327,13 @@
             const newType = effect === 3 ? 1 : (effect === 4 ? 2 : 4);
             consumeToken(1, tk);
             G.activeToken1 = null;
-            const activeCount = G.player1_token_list.filter((v) => Number(v) > 0).length;
-            if (activeCount < 5) {
+            // Compact first so the slot just freed by the trap token can immediately hold the newly drawn token!
+            G.player1_token_list = G.player1_token_list.filter((v) => Number(v) !== 0);
+            if (G.player1_token_list.length < 5) {
               G.player1_token_list.push(newType);
               renderTokenClones(1);
             } else {
               await showMessage(12);
-              await showMessage(13);
             }
             G.curr_action_1 = 0;
             G.t1_lock = 0;
@@ -1349,8 +1375,8 @@
   // Player 2 Token Click Handler
   async function onClickPlayer2Token(tk) {
     if (G.field !== 1) return;
-    // Allow clicking an already-activated Move or Attack token a second time to discard it!
-    if (G.t2_lock === 1 && G.activeToken2 === tk && (G.curr_action_2 === 4 || G.curr_action_2 === 1) && !G.movingState && !G.targetMonsterResolver) {
+    // Allow clicking an already-activated Move, Attack, or Defense token a second time to discard it!
+    if (G.t2_lock === 1 && G.activeToken2 === tk && (G.curr_action_2 === 4 || G.curr_action_2 === 1 || (G.curr_action_2 === 2 && G.turn % 2 === 1)) && !G.movingState && !G.targetMonsterResolver) {
       playSound('coinflip');
       consumeToken(2, tk);
       G.activeToken2 = null;
@@ -1409,20 +1435,26 @@
           G.t2_lock = 0;
         }
       } else if (cosIdx === 2) {
-        playSound('coinflip');
-        tk.colorEffect = 25;
-        await showMessage(21);
-        consumeToken(2, tk);
-        G.activeToken2 = null;
-        G.p2_punish = 1;
-        G.t2_lock = 0;
+        // NEW RULE 4: Using Defense token on own turn attaches a Protective Shield to an allied monster!
+        if (hasMonsterAlive(2)) {
+          playSound('coinflip');
+          tk.colorEffect = 25;
+          G.curr_action_2 = 2;
+          updateStatusUI();
+        } else {
+          playSound('coinflip');
+          consumeToken(2, tk);
+          G.activeToken2 = null;
+          G.curr_action_2 = 0;
+          G.t2_lock = 0;
+        }
       } else if (cosIdx === 3) {
         if (hasMonsterAlive(2)) {
           playSound('coinflip');
           tk.colorEffect = 25;
           G.curr_action_2 = 3;
           G.dice_grid_num = 0;
-          const effect = randInt(1, 6);
+          const effect = rollSmartTrapEffect(1);
           G.defense_done = effect;
 
           let hasTarget = false;
@@ -1442,13 +1474,12 @@
             const newType = effect === 3 ? 1 : (effect === 4 ? 2 : 4);
             consumeToken(2, tk);
             G.activeToken2 = null;
-            const activeCount = G.player2_token_list.filter((v) => Number(v) > 0).length;
-            if (activeCount < 5) {
+            G.player2_token_list = G.player2_token_list.filter((v) => Number(v) !== 0);
+            if (G.player2_token_list.length < 5) {
               G.player2_token_list.push(newType);
               renderTokenClones(2);
             } else {
               await showMessage(12);
-              await showMessage(13);
             }
             G.curr_action_2 = 0;
             G.t2_lock = 0;
@@ -1760,6 +1791,7 @@
     mon.vars.row = row;
     mon.vars.col = col;
     mon.vars.player = player;
+    mon.vars.shielded = false;
     playSound('summon');
     mon.comeToFront();
     mon.visible = true;
@@ -1767,6 +1799,71 @@
     mon.onClick = () => onClickMonster(mon);
     if (player === 1) clones.p1_monster.push(mon);
     else clones.p2_monster.push(mon);
+
+    // Check if monster landed directly on a Mystery Treasure Chest!
+    checkChestPickup(player, mon, row, col);
+  }
+
+  async function checkChestPickup(player, mon, row, col) {
+    const idx = G.treasure_chests.findIndex((ch) => ch.row === row && ch.col === col);
+    if (idx === -1) return;
+    G.treasure_chests.splice(idx, 1);
+    playSound('specialsummon');
+
+    const reward = randInt(1, 3);
+    const pName = player === 1 ? '玩家 1 (紅方)' : '玩家 2 (藍方)';
+    if (reward === 1) {
+      // Reward 1: +1 Life Heart (up to 4) + Shield
+      if (player === 1) G.p1_life = Math.min(4, G.p1_life + 1);
+      else G.p2_life = Math.min(4, G.p2_life + 1);
+      mon.vars.shielded = true;
+      mon.sayText = '💎生命+1 & 護盾!';
+      updateStatusUI(`💎 ${pName} 拾獲神秘寶箱！【生命祝福】：生命值 +1 顆心 ❤️，且怪獸獲得護盾 🛡️！`);
+    } else if (reward === 2) {
+      // Reward 2: Monster gets Shield + player gets 1 Attack & 1 Move token (if space allows)
+      mon.vars.shielded = true;
+      const list = player === 1 ? G.player1_token_list : G.player2_token_list;
+      const compacted = list.filter((v) => Number(v) !== 0);
+      if (compacted.length < 5) compacted.push(1);
+      if (compacted.length < 5) compacted.push(4);
+      if (player === 1) G.player1_token_list = compacted;
+      else G.player2_token_list = compacted;
+      renderTokenClones(player);
+      mon.sayText = '💎戰神祝福!';
+      updateStatusUI(`💎 ${pName} 拾獲神秘寶箱！【戰神祝福】：怪獸獲得護盾 🛡️，並額外獲得攻擊與移動徽章！`);
+    } else {
+      // Reward 3: Gain a free Summon token for an available species (or Attack+Move if all summoned)
+      const offset = player === 1 ? 0 : 5;
+      let availSp = 0;
+      for (const sp of [1, 3, 2, 5, 4]) {
+        if (Number(G.summon_token_produced[offset + sp - 1]) < SPECIES_MAX[sp]) {
+          availSp = sp;
+          break;
+        }
+      }
+      const list = player === 1 ? G.player1_token_list : G.player2_token_list;
+      const compacted = list.filter((v) => Number(v) !== 0);
+      if (availSp > 0 && compacted.length < 5) {
+        G.summon_token_produced[offset + availSp - 1] += 1;
+        compacted.push(availSp * 10 + 5);
+        if (player === 1) G.player1_token_list = compacted;
+        else G.player2_token_list = compacted;
+        renderTokenClones(player);
+        mon.sayText = '💎獲得召喚徽章!';
+        updateStatusUI(`💎 ${pName} 拾獲神秘寶箱！【召喚祝福】：直接獲得 1 枚${SPECIES_NAMES[availSp]}召喚徽章 ⭐！`);
+      } else {
+        mon.vars.shielded = true;
+        if (compacted.length < 5) compacted.push(1);
+        if (player === 1) G.player1_token_list = compacted;
+        else G.player2_token_list = compacted;
+        renderTokenClones(player);
+        mon.sayText = '💎護盾&攻擊!';
+        updateStatusUI(`💎 ${pName} 拾獲神秘寶箱！怪獸獲得護盾 🛡️ 並獲得攻擊徽章！`);
+      }
+    }
+    setTimeout(() => {
+      if (mon.sayText && mon.sayText.startsWith('💎')) mon.sayText = '';
+    }, 2200);
   }
 
   function getBaseAtk(cosIdx) {
@@ -1897,6 +1994,14 @@
             flashSword(c, r);
             flashShield(tc, tr);
             mon.sayText = `攻擊力${atkList[cosIdx - 1] * 500}`;
+
+            // If targetMon has an active Protective Shield (Rule 4), automatically activate its base defense!
+            const defList = player === 1 ? G.player2_mon_atk_def : G.player1_mon_atk_def;
+            if (targetMon.vars.shielded) {
+              targetMon.vars.shielded = false;
+              defList[targetMon.costumeIndex - 1] = getBaseDef(targetMon.costumeIndex);
+              targetMon.sayText = `🛡️護盾防禦${defList[targetMon.costumeIndex - 1] * 500}`;
+            }
 
             // Show Prepare buttons for both players
             showPrepareButtons();
@@ -2052,12 +2157,30 @@
           mon.vars.row = curRow;
           mon.vars.col = curCol;
           mon.comeToFront();
+
+          // Check if monster stepped onto a Mystery Treasure Chest!
+          await checkChestPickup(player, mon, curRow, curCol);
         } else {
           await showMessage(18); // invalid_move
         }
 
         G[lockKey] = 0;
         finishTokenAction(player);
+      }
+
+      // --- ACTION 2 (On Own Turn): ATTACH PROTECTIVE SHIELD TO OWN MONSTER ---
+      else if (act === 2) {
+        G[lockKey] = 1;
+        mon.vars.shielded = true;
+        playSound('set');
+        flashShield(mon.vars.col, mon.vars.row);
+        mon.sayText = '🛡️已掛載護盾!';
+        setTimeout(() => {
+          if (mon.sayText === '🛡️已掛載護盾!') mon.sayText = '';
+        }, 1600);
+        G[lockKey] = 0;
+        finishTokenAction(player);
+        updateStatusUI('🛡️ 已為怪獸掛上護盾！（可抵擋 1 次敵方陷阱破壞，或在決鬥被攻擊時自動啟動基礎防禦力）');
       }
     }
 
@@ -2120,10 +2243,24 @@
       // Case C: Trap Effect 1 (Destroy enemy monster)
       if ((isP1Turn && player === 2 && G.curr_action_1 === 3 && G.defense_done === 1) ||
           (!isP1Turn && player === 1 && G.curr_action_2 === 3 && G.defense_done === 1)) {
-        destroyMonsterClone(mon);
-        playSound('destroyed');
-        await showMessage(isP1Turn ? 7 : 10); // p1_atk_s / p2_atk_s
-        finishTokenAction(isP1Turn ? 1 : 2);
+        if (mon.vars.shielded) {
+          // Protective Shield blocks Trap destruction!
+          mon.vars.shielded = false;
+          playSound('draw');
+          flashShield(mon.vars.col, mon.vars.row);
+          mon.sayText = '🛡️護盾抵擋陷阱!';
+          setTimeout(() => {
+            if (mon.sayText === '🛡️護盾抵擋陷阱!') mon.sayText = '';
+          }, 1800);
+          await showMessage(isP1Turn ? 8 : 11); // p1_atk_f / p2_atk_f
+          finishTokenAction(isP1Turn ? 1 : 2);
+          updateStatusUI('🛡️ 敵方怪獸身上的護盾成功抵擋了陷阱破壞！（護盾已消耗）');
+        } else {
+          destroyMonsterClone(mon);
+          playSound('destroyed');
+          await showMessage(isP1Turn ? 7 : 10); // p1_atk_s / p2_atk_s
+          finishTokenAction(isP1Turn ? 1 : 2);
+        }
       }
     }
   }
@@ -2321,6 +2458,54 @@
       sp.draw(ctx);
     }
 
+    // Draw Mystery Treasure Chests on the board & Protective Shield icons on shielded monsters!
+    if (G.stageCostume === 'game') {
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 220);
+      ctx.save();
+
+      // 1. Mystery Treasure Chests
+      if (G.treasure_chests && G.treasure_chests.length > 0) {
+        for (const ch of G.treasure_chests) {
+          const sx = CENTER_X + X_MODIFIED[ch.col - 1];
+          const sy = CENTER_Y - Y_MODIFIED[ch.row - 1];
+          ctx.fillStyle = `rgba(245, 158, 11, ${0.28 + 0.25 * pulse})`;
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(sx + 1, sy + 1, 20, 20, 4);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = '14px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💎', sx + 11, sy + 11);
+        }
+      }
+
+      // 2. Protective Shield Badges on Shielded Monsters
+      const allMonsters = [...clones.p1_monster, ...clones.p2_monster];
+      for (const m of allMonsters) {
+        if (m.visible && m.vars.shielded) {
+          const mx = CENTER_X + m.x;
+          const my = CENTER_Y - m.y;
+          // Glowing cyan/gold shield ring around monster + mini shield badge
+          ctx.strokeStyle = `rgba(56, 189, 248, ${0.55 + 0.4 * pulse})`;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.arc(mx, my - 4, 14, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.font = '12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('🛡️', mx + 10, my - 14);
+        }
+      }
+
+      ctx.restore();
+    }
+
     // Waiting screen visual guide when P2 is AI: highlight P1 for human player & badge P2 as AI!
     if (G.stageCostume === 'waiting' && sprites.p1_enter.visible) {
       const p1x = CENTER_X + sprites.p1_enter.x;
@@ -2486,6 +2671,7 @@
       player2_mon_field: [...G.player2_mon_field],
       summon_token_produced: [...G.summon_token_produced],
       stones: clones.stone_road.map((s) => ({ x: s.x, y: s.y })),
+      treasure_chests: [...(G.treasure_chests || [])],
       p1_tiles: clones.p1_occupied.map((t) => ({ row: t.vars.row, col: t.vars.col })),
       p2_tiles: clones.p2_occupied.map((t) => ({ row: t.vars.row, col: t.vars.col })),
       p1_monsters: clones.p1_monster.map((m) => ({
@@ -2493,12 +2679,14 @@
         row: m.vars.row,
         col: m.vars.col,
         myID: m.vars.myID,
+        shielded: !!m.vars.shielded,
       })),
       p2_monsters: clones.p2_monster.map((m) => ({
         cosIdx: m.costumeIndex,
         row: m.vars.row,
         col: m.vars.col,
         myID: m.vars.myID,
+        shielded: !!m.vars.shielded,
       })),
     };
     try {
@@ -2553,6 +2741,7 @@
       G.m2_lock = 0;
 
       G.field_occupied = [...state.field_occupied];
+      G.treasure_chests = state.treasure_chests ? [...state.treasure_chests] : [];
       G.player1_token_list = [...state.player1_token_list];
       G.player2_token_list = [...state.player2_token_list];
       G.player1_mon_field = [...state.player1_mon_field];
@@ -2624,6 +2813,7 @@
         mon.vars.row = m.row;
         mon.vars.col = m.col;
         mon.vars.player = 1;
+        mon.vars.shielded = !!m.shielded;
         mon.visible = true;
         mon.onClick = () => onClickMonster(mon);
         return mon;
@@ -2640,6 +2830,7 @@
         mon.vars.row = m.row;
         mon.vars.col = m.col;
         mon.vars.player = 2;
+        mon.vars.shielded = !!m.shielded;
         mon.visible = true;
         mon.onClick = () => onClickMonster(mon);
         return mon;
@@ -2759,6 +2950,11 @@
       const newDistToBase = Math.abs(cand.r - 7) + Math.abs(cand.c - 1);
       const distGain = curDistToBase - newDistToBase;
       score += distGain * 40;
+
+      // Bonus for stepping directly onto a Mystery Treasure Chest!
+      if (G.treasure_chests && G.treasure_chests.some((ch) => ch.row === cand.r && ch.col === cand.c)) {
+        score += 450;
+      }
 
       // Check adjacency to P1 monsters
       for (const em of clones.p1_monster) {
@@ -3117,7 +3313,26 @@
           }
         }
 
-        // 2E. Smart Hand Management at End of AI Turn:
+        // 2E. Smart Hand Management & Active Shielding at End of AI Turn:
+        // First, if AI has an unshielded monster and >= 2 Defense tokens (or hand >= 4 with a Defense token), actively put a Shield on its frontline monster!
+        const defTokensEnd = clones.p2_tokens.filter(
+          (t) => Number(G.player2_token_list[t.vars.slotIndex]) > 0 && t.costumeIndex === 2
+        );
+        const unshieldedMons = clones.p2_monster
+          .filter((m) => !m.vars.shielded)
+          .sort((a, b) => a.vars.col - b.vars.col);
+
+        if (defTokensEnd.length > 0 && unshieldedMons.length > 0) {
+          const curHand = G.player2_token_list.filter((v) => Number(v) > 0).length;
+          if (defTokensEnd.length >= 2 || curHand >= 4) {
+            updateStatusUI('🤖 AI 主動使用防禦徽章為前線怪獸掛上護盾 🛡️！');
+            await onClickPlayer2Token(defTokensEnd[0]);
+            await sleep(400);
+            await onClickMonster(unshieldedMons[0]);
+            await sleep(450);
+          }
+        }
+
         // Don't let AI clog all 5 slots with Attack/Defense tokens when it needs room for Move, Trap, or Summon!
         let activeTokens = clones.p2_tokens.filter(
           (t) => Number(G.player2_token_list[t.vars.slotIndex]) > 0 && t.costumeIndex !== 5
