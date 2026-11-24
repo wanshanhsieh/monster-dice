@@ -1203,9 +1203,29 @@
     tokenSprite.ghost = 50;
   }
 
-  // Original 1~6 equal probability (1/6 = 16.7% each) for Trap token
-  function rollSmartTrapEffect() {
-    return randInt(1, 6);
+  // Enhanced Trap Probability (v1.8):
+  // Since monsters can now equip Protective Shields (Rule 4), increase Destruction rates to 60% total!
+  // 1 (Destroy Monster): 35% | 2 (Destroy Grid): 25% | 3 (Get Atk): 15% | 4 (Get Def): 10% | 5 (Get Mov): 10% | 6 (Miss): 5%
+  function rollSmartTrapEffect(enemyPlayer) {
+    const r = Math.random() * 100;
+    const hasEnemyMon = hasMonsterAlive(enemyPlayer);
+    const hasEnemyGrid = hasEmptyTerritory(enemyPlayer);
+
+    if (r < 35) {
+      if (hasEnemyMon) return 1;
+      return hasEnemyGrid ? 2 : 3;
+    } else if (r < 60) {
+      if (hasEnemyGrid) return 2;
+      return hasEnemyMon ? 1 : 3;
+    } else if (r < 75) {
+      return 3; // Get Attack
+    } else if (r < 85) {
+      return 4; // Get Defense
+    } else if (r < 95) {
+      return 5; // Get Move
+    } else {
+      return 6; // 5% Miss
+    }
   }
 
   //Player 1 Token Click Handler
@@ -1291,13 +1311,11 @@
           G.curr_action_1 = 2;
           updateStatusUI();
         } else {
-          // No monster alive: discard defense token without penalty!
+          // No monster alive yet: don't immediately discard on first click! Arm it so a second click discards it if desired.
           playSound('coinflip');
-          consumeToken(1, tk);
-          G.activeToken1 = null;
-          G.curr_action_1 = 0;
-          G.t1_lock = 0;
-          updateStatusUI('🗑️ 場上無怪獸，已將防禦徽章丟棄騰出空間！');
+          tk.colorEffect = 25;
+          G.curr_action_1 = 2;
+          updateStatusUI('⚠️ 目前場上沒有你的怪獸可以掛載護盾！（若想把這枚防禦徽章丟棄以騰出空間，請「再點它一下」即可丟棄）');
         }
       } else if (cosIdx === 3) {
         // Trap token
@@ -2453,44 +2471,48 @@
     }
 
     // Draw all sprites ordered by layerGroup first (so monsters ALWAYS stay above territory tiles!), then zOrder
+    // We inject Mystery Treasure Chests right above territory tiles (layerGroup 12) and Shield rings right above monsters (layerGroup 22)
+    // so that Dice (layerGroup 45) and Message Banners (layerGroup 60) are ALWAYS drawn ON TOP of them!
     const list = getAllRenderSprites().sort((a, b) => (a.layerGroup - b.layerGroup) || (a.zOrder - b.zOrder));
-    for (const sp of list) {
-      sp.draw(ctx);
-    }
+    let drawnChests = false;
+    let drawnShields = false;
+    const overlayPulse = 0.5 + 0.5 * Math.sin(performance.now() / 220);
 
-    // Draw Mystery Treasure Chests on the board & Protective Shield icons on shielded monsters!
-    if (G.stageCostume === 'game') {
-      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 220);
+    const drawChestsLayer = () => {
+      if (drawnChests) return;
+      drawnChests = true;
+      if (G.stageCostume !== 'game' || !G.treasure_chests || G.treasure_chests.length === 0) return;
       ctx.save();
+      for (const ch of G.treasure_chests) {
+        const sx = CENTER_X + X_MODIFIED[ch.col - 1];
+        const sy = CENTER_Y - Y_MODIFIED[ch.row - 1];
+        ctx.fillStyle = `rgba(245, 158, 11, ${0.28 + 0.25 * overlayPulse})`;
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(sx + 1, sy + 1, 20, 20, 4);
+        ctx.fill();
+        ctx.stroke();
 
-      // 1. Mystery Treasure Chests
-      if (G.treasure_chests && G.treasure_chests.length > 0) {
-        for (const ch of G.treasure_chests) {
-          const sx = CENTER_X + X_MODIFIED[ch.col - 1];
-          const sy = CENTER_Y - Y_MODIFIED[ch.row - 1];
-          ctx.fillStyle = `rgba(245, 158, 11, ${0.28 + 0.25 * pulse})`;
-          ctx.strokeStyle = '#fbbf24';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.roundRect(sx + 1, sy + 1, 20, 20, 4);
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.font = '14px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('💎', sx + 11, sy + 11);
-        }
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💎', sx + 11, sy + 11);
       }
+      ctx.restore();
+    };
 
-      // 2. Protective Shield Badges on Shielded Monsters
+    const drawShieldsLayer = () => {
+      if (drawnShields) return;
+      drawnShields = true;
+      if (G.stageCostume !== 'game') return;
+      ctx.save();
       const allMonsters = [...clones.p1_monster, ...clones.p2_monster];
       for (const m of allMonsters) {
         if (m.visible && m.vars.shielded) {
           const mx = CENTER_X + m.x;
           const my = CENTER_Y - m.y;
-          // Glowing cyan/gold shield ring around monster + mini shield badge
-          ctx.strokeStyle = `rgba(56, 189, 248, ${0.55 + 0.4 * pulse})`;
+          ctx.strokeStyle = `rgba(56, 189, 248, ${0.55 + 0.4 * overlayPulse})`;
           ctx.lineWidth = 2.5;
           ctx.beginPath();
           ctx.arc(mx, my - 4, 14, 0, Math.PI * 2);
@@ -2502,9 +2524,16 @@
           ctx.fillText('🛡️', mx + 10, my - 14);
         }
       }
-
       ctx.restore();
+    };
+
+    for (const sp of list) {
+      if (sp.layerGroup > 12 && !drawnChests) drawChestsLayer();
+      if (sp.layerGroup > 22 && !drawnShields) drawShieldsLayer();
+      sp.draw(ctx);
     }
+    if (!drawnChests) drawChestsLayer();
+    if (!drawnShields) drawShieldsLayer();
 
     // Waiting screen visual guide when P2 is AI: highlight P1 for human player & badge P2 as AI!
     if (G.stageCostume === 'waiting' && sprites.p1_enter.visible) {
@@ -2741,7 +2770,21 @@
       G.m2_lock = 0;
 
       G.field_occupied = [...state.field_occupied];
-      G.treasure_chests = state.treasure_chests ? [...state.treasure_chests] : [];
+      if (state.treasure_chests && state.treasure_chests.length > 0) {
+        G.treasure_chests = [...state.treasure_chests];
+      } else {
+        // If loading an older save that didn't have treasure chests yet, spawn 2 chests on empty middle cells!
+        G.treasure_chests = [];
+        let chestTries = 0;
+        while (G.treasure_chests.length < 2 && chestTries < 60) {
+          chestTries++;
+          const cr = randInt(2, 12);
+          const cc = randInt(8, 12);
+          if (getCell(cr, cc) === 0 && !G.treasure_chests.some((ch) => ch.row === cr && ch.col === cc)) {
+            G.treasure_chests.push({ row: cr, col: cc });
+          }
+        }
+      }
       G.player1_token_list = [...state.player1_token_list];
       G.player2_token_list = [...state.player2_token_list];
       G.player1_mon_field = [...state.player1_mon_field];
@@ -3043,10 +3086,8 @@
         if (G.panel_lock === 0 && G.p2_punish === 0) {
           updateStatusUI('🤖 AI (藍方) 正在選擇怪獸並擲骰子...');
           // Choose best available species:
-          // Priority: if no monsters on board, pick highest summon probability (4:Beast, 3:Warrior, 5:Ghost, 2:Magician, 1:Dragon)
-          // If already have monsters on board, mix in Dragon/Warrior/Magician
-          const hasMonsters = clones.p2_monster.length > 0;
-          const order = hasMonsters ? [3, 1, 4, 2, 5] : [4, 3, 5, 2, 1];
+          // Priority: prefer highest summon probability species (4:Beast 67%/50%, 5:Ghost 50%, 3:Warrior 50%/33%, 2:Magician 33%, 1:Dragon 25%)
+          const order = [4, 5, 3, 2, 1];
           let chosenSp = 4;
           for (const sp of order) {
             const used = Number(G.summon_token_produced[sp + 4]);
